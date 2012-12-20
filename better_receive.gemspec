@@ -2,11 +2,11 @@
 require File.expand_path('../lib/better_receive/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["Steve Ellis"]
-  gem.email         = ["email@steveell.is"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.authors       = ["Steve Ellis", "Matthew Horan"]
+  gem.email         = ["email@steveell.is", "matt@matthoran.com"]
+  gem.description   = %q{Assert that an object responds to a method before asserting that the method is received.}
+  gem.summary       = %q{A better should_receive}
+  gem.homepage      = "http://github.com/se3000/better_receive"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
