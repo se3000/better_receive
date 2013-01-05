@@ -18,10 +18,11 @@ describe BetterReceive do
     end
 
     it "raises an error if it the method is not defined" do
-      foo.should_receive(:respond_to?).with(:baz).and_call_original
       expect {
-        foo.better_receive(:baz)
-      }.to raise_error RSpec::Expectations::ExpectationNotMetError
+        foo.better_receive(:bar_baz)
+      }.to raise_error(RSpec::Expectations::ExpectationNotMetError) { |error|
+        error.message.should =~ /to respond to :bar_baz/
+      }
     end
 
     it "checks that the object receives the specified method" do
