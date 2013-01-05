@@ -33,13 +33,25 @@ describe BetterReceive do
     end
 
     it "returns an rspec mock object(responds to additional matchers ('with', 'once'...))" do
-      foo.better_receive(:bar) === RSpec::Mocks::MessageExpectation
+      foo.better_receive(:bar).should be_a RSpec::Mocks::MessageExpectation
 
       foo.bar
 
       foo.better_receive(:bar).with('wibble')
 
       foo.bar('wibble')
+    end
+
+    context "when passing arguments" do
+      it "passes all arguments through to should_receive" do
+        arg1 = 1
+        arg2 = 2
+        block = Proc.new {}
+
+        foo.should_receive(:should_receive).with(:bar, arg1, arg2, block)
+
+        foo.better_receive(:bar, arg1, arg2, block)
+      end
     end
   end
 end
