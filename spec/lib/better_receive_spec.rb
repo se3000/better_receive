@@ -25,33 +25,40 @@ describe BetterReceive do
       }
     end
 
-    it "checks that the object receives the specified method" do
-      foo.should_receive(:should_receive).and_call_original
+    context "when mocking" do
+      let(:mock_proxy) { double(RSpec::Mocks::Proxy) }
 
-      foo.better_receive(:bar)
+      it "creates a mock proxy and adds an expectation to it" do
+        foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
+        mock_proxy.should_receive(:add_message_expectation)
 
-      foo.bar
-    end
+        foo.better_receive(:bar)
+      end
 
-    it "returns an rspec mock object(responds to additional matchers ('with', 'once'...))" do
-      foo.better_receive(:bar).should be_a RSpec::Mocks::MessageExpectation
+      it "returns an rspec message expectation(responds to additional matchers ('with', 'once'...))" do
+        foo.better_receive(:bar).should be_a RSpec::Mocks::MessageExpectation
 
-      foo.bar
+        foo.bar
 
-      foo.better_receive(:bar).with('wibble')
+        foo.better_receive(:bar).with('wibble')
 
-      foo.bar('wibble')
-    end
+        foo.bar('wibble')
+      end
 
-    context "when passing arguments" do
-      it "passes all arguments through to should_receive" do
-        arg1 = 1
-        arg2 = 2
-        block = Proc.new {}
+      context "and passing arguments" do
+        let(:block_param) { Proc.new {} }
+        let(:options) { {passed: true} }
 
-        foo.should_receive(:should_receive).with(:bar, arg1, arg2, block)
+        it "passes all arguments through to the mock_proxy" do
+          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
+          mock_proxy.should_receive(:add_message_expectation) do |*args, &block|
+            args[1].should == :bar
+            args[2].should == options
+            block.should == block_param
+          end
 
-        foo.better_receive(:bar, arg1, arg2, block)
+          foo.better_receive(:bar, passed: true, &block_param)
+        end
       end
     end
   end
