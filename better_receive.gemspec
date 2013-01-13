@@ -17,4 +17,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency("rspec", "~> 2.0")
   gem.add_development_dependency("rake", ">= 0")
+  gem.add_development_dependency("pry", ">= 0")
 end
