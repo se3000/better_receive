@@ -60,6 +60,40 @@ describe BetterReceive do
           foo.better_receive(:bar, passed: true, &block_param)
         end
       end
+
+      context "on .any_instance" do
+        context "when the method is defined" do
+          context "and the method is called" do
+            it 'does not raise an error' do
+              expect {
+                Foo.any_instance.better_receive(:bar)
+                foo.bar
+              }.to_not raise_error
+            end
+          end
+
+          context 'and the method is not called' do
+            it 'does raise an error' do
+              expect {
+                Foo.any_instance.better_receive(:bar)
+                RSpec::Mocks::space.verify_all
+              }.to raise_error(RSpec::Mocks::MockExpectationError) { |error|
+                error.message.should == "Exactly one instance should have received the following message(s) but didn't: bar"
+              }
+            end
+          end
+        end
+
+        context 'when the method is not defined' do
+          it 'raises an error' do
+            expect {
+              Foo.any_instance.better_receive(:baz)
+            }.to raise_error { |error|
+              error.message.should == "Expected instances of Foo to respond to :baz"
+            }
+          end
+        end
+      end
     end
   end
 end
