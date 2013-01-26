@@ -10,7 +10,7 @@ describe BetterReceive do
     let(:foo) { Foo.new }
 
     it "determines whether an object responds to a method" do
-      foo.should_receive(:respond_to?).with(:bar).and_call_original
+      foo.should_receive(:respond_to?).with(:bar).and_return(true)
 
       foo.better_receive(:bar)
 

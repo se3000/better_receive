@@ -16,8 +16,7 @@ module BetterReceive
     attr_reader :object
 
     def better_respond_to(selector)
-      case object
-      when RSpec::Mocks::AnyInstance::Recorder
+      if any_instance?
         any_instance_should_respond_to selector
       else
         object.should respond_to(selector)
@@ -36,8 +35,7 @@ module BetterReceive
     end
 
     def mock_method(selector, options, &block)
-      case object
-      when RSpec::Mocks::AnyInstance::Recorder
+      if any_instance?
         any_instance_should_receive selector, &block
       else
         location = options[:expected_from] || caller(1)[2]
@@ -51,8 +49,19 @@ module BetterReceive
       object.instance_variable_set(:@expectation_set, true)
       object.send(:observe!, selector)
 
-      expectation_chain = RSpec::Mocks::AnyInstance::PositiveExpectationChain.new(selector, &block)
-      object.message_chains.add(selector, expectation_chain)
+      object.message_chains.add(selector, expectation_chain(selector, &block))
+    end
+
+    def expectation_chain(*args)
+      if defined?(RSpec::Mocks::AnyInstance::PositiveExpectationChain)
+        RSpec::Mocks::AnyInstance::PositiveExpectationChain.new(*args)
+      else
+        RSpec::Mocks::AnyInstance::ExpectationChain.new(*args)
+      end
+    end
+
+    def any_instance?
+      object.is_a?(RSpec::Mocks::AnyInstance::Recorder)
     end
 
     def mock_proxy
