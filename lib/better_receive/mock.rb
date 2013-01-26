@@ -11,9 +11,6 @@ module BetterReceive
       mock_method(selector, options, &block)
     end
 
-    def rspec_verify
-    end
-
     private
 
     attr_reader :object
