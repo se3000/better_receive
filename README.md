@@ -1,24 +1,26 @@
 # BetterReceive
 
-TODO: Write a gem description
+BetterReceive helps test drive new functionality and prevent bugs by asserting that an object responds to a method before mocking it.
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'better_receive'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install better_receive
 
 ## Usage
 
-TODO: Write usage instructions here
+
+```ruby
+class Foo; end
+foo = Foo.new
+
+foo.better_receive(:bar)
+```
+or
+```ruby
+Foo.any_instance.better_receive(:bar)
+```
+
+Either situation will raise an error because instances of Foo do not respond to :bar.
 
 ## Contributing
 
@@ -27,3 +29,10 @@ TODO: Write usage instructions here
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## To Do
+
+* #better_stub
+* support arrity checks with #responds_to
+* support options other than Ruby 1.9.2+ and RSpec
+

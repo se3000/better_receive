@@ -5,7 +5,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["Steve Ellis", "Matthew Horan"]
   gem.email         = ["email@steveell.is", "matt@matthoran.com"]
   gem.description   = %q{Assert that an object responds to a method before asserting that the method is received.}
-  gem.summary       = %q{A better should_receive}
+  gem.summary       = %q{A more assertive mock.}
   gem.homepage      = "http://github.com/se3000/better_receive"
 
   gem.files         = `git ls-files`.split($\)
