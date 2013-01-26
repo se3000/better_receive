@@ -5,7 +5,7 @@ module BetterReceive
       @subject = subject
     end
 
-    def responds_to_and_receives(selector, options, &block)
+    def responds_to_and_receives(selector, options={}, &block)
       if subject.is_a?(RSpec::Mocks::AnyInstance::Recorder)
         any_instance_better_receive(selector, options, &block)
       else
