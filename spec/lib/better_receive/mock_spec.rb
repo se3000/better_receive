@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BetterReceive do
+describe BetterReceive::Mock do
   class Foo
     def bar(baz = nil)
     end
@@ -18,7 +18,7 @@ describe BetterReceive do
       foo.bar
     end
 
-    it "raises an error if it the method is not defined" do
+    it "raises an error if the method is not defined" do
       expect {
         br_mock.responds_to_and_receives :bar_baz
       }.to raise_error(RSpec::Expectations::ExpectationNotMetError) { |error|
