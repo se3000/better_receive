@@ -1,6 +1,7 @@
+[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/se3000/better_receive)
 # BetterReceive
 
-BetterReceive helps test drive new functionality and prevent bugs by asserting that an object responds to a method before mocking it.
+Test drive new functionality and prevent bugs by asserting objects respond to methods when mocking/stubbing.
 
 ## Installation
 
@@ -10,17 +11,22 @@ BetterReceive helps test drive new functionality and prevent bugs by asserting t
 
 
 ```ruby
+
 class Foo; end
 foo = Foo.new
 
 foo.better_receive(:bar)
-```
-or
-```ruby
-Foo.any_instance.better_receive(:bar)
+# or
+foo.better_stub(bar: 1, baz: 2)
+# or
+Foo.any_instance.better_receive(:bar).with(:wibble)
+
 ```
 
-Either situation will raise an error because instances of Foo do not respond to :bar.
+Any of these situation will raise an error because instances of Foo do not respond to :bar.
+
+After the initial extra assertion, they continue to act like regular RSpec mocks/stubs.
+
 
 ## Contributing
 
@@ -32,7 +38,6 @@ Either situation will raise an error because instances of Foo do not respond to 
 
 ## To Do
 
-* #better_stub
 * support arrity checks with #responds_to
 * support options other than Ruby 1.9.2+ and RSpec
 
