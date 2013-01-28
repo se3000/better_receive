@@ -6,21 +6,21 @@ describe BetterReceive::Mock do
     end
   end
 
-  describe "#responds_to_and_receives" do
+  describe "#assert_with" do
     let(:foo) { Foo.new }
     let(:br_mock) { BetterReceive::Mock.new(foo) }
 
     it "determines whether an object responds to a method" do
       foo.should_receive(:respond_to?).with(:bar).and_return(true)
 
-      br_mock.responds_to_and_receives :bar
+      br_mock.assert_with :bar
 
       foo.bar
     end
 
     it "raises an error if the method is not defined" do
       expect {
-        br_mock.responds_to_and_receives :bar_baz
+        br_mock.assert_with :bar_baz
       }.to raise_error(RSpec::Expectations::ExpectationNotMetError) { |error|
         error.message.should =~ /to respond to :bar_baz/
       }
@@ -33,7 +33,7 @@ describe BetterReceive::Mock do
         foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
         mock_proxy.should_receive(:add_message_expectation)
 
-        br_mock.responds_to_and_receives :bar
+        br_mock.assert_with :bar
       end
 
       it "returns an rspec message expectation(responds to additional matchers ('with', 'once'...))" do
@@ -41,7 +41,7 @@ describe BetterReceive::Mock do
 
         foo.bar
 
-        br_mock.responds_to_and_receives(:bar).with('wibble')
+        br_mock.assert_with(:bar).with('wibble')
 
         foo.bar('wibble')
       end
@@ -58,7 +58,7 @@ describe BetterReceive::Mock do
             block.should == block_param
           end
 
-          br_mock.responds_to_and_receives(:bar, passed: true, &block_param)
+          br_mock.assert_with(:bar, passed: true, &block_param)
         end
       end
 
@@ -69,7 +69,7 @@ describe BetterReceive::Mock do
           context "and the method is called" do
             it 'does not raise an error' do
               expect {
-                br_mock.responds_to_and_receives(:bar)
+                br_mock.assert_with(:bar)
                 foo.bar
               }.to_not raise_error
             end
@@ -78,7 +78,7 @@ describe BetterReceive::Mock do
           context 'and the method is not called' do
             it 'does raise an error' do
               expect {
-                br_mock.responds_to_and_receives(:bar)
+                br_mock.assert_with(:bar)
                 RSpec::Mocks::space.verify_all
               }.to raise_error(RSpec::Mocks::MockExpectationError) { |error|
                 error.message.should == "Exactly one instance should have received the following message(s) but didn't: bar"
@@ -90,7 +90,7 @@ describe BetterReceive::Mock do
         context 'when the method is not defined' do
           it 'raises an error' do
             expect {
-              br_mock.responds_to_and_receives(:baz)
+              br_mock.assert_with(:baz)
             }.to raise_error { |error|
               error.message.should == "Expected instances of Foo to respond to :baz"
             }

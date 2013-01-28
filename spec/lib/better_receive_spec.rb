@@ -18,7 +18,7 @@ describe BetterReceive do
     it "checks that the object responds to the method and that the method is called" do
       BetterReceive::Mock.stub(:new).with(foo).and_return(br_instance)
 
-      br_instance.should_receive(:responds_to_and_receives).with(:bar)
+      br_instance.should_receive(:assert_with).with(:bar)
 
       foo.better_receive(:bar)
     end
@@ -48,7 +48,7 @@ describe BetterReceive do
     it "checks that the object responds to the method and that the method is called" do
       BetterReceive::Stub.stub(:new).with(foo).and_return(br_instance)
 
-      br_instance.should_receive(:assert_and_stub).with(:bar)
+      br_instance.should_receive(:assert_with).with(:bar)
 
       foo.better_stub(:bar)
     end

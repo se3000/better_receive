@@ -5,11 +5,11 @@ require "better_receive/stub"
 
 module BetterReceive
   def better_receive(*args)
-    Mock.new(self).responds_to_and_receives(*args)
+    Mock.new(self).assert_with(*args)
   end
 
   def better_stub(*args)
-    Stub.new(self).assert_and_stub(*args)
+    Stub.new(self).assert_with(*args)
   end
 end
 
