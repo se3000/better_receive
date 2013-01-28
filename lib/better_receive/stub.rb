@@ -1,7 +1,20 @@
 module BetterReceive
   class Stub < Base
 
-    def assert_with(selector, options={}, &block)
+    def assert_with(selector_or_hash, options={}, &block)
+      if selector_or_hash.is_a?(Hash)
+        selector_or_hash.each do |selector, value|
+          better_stub_method(selector, options, &block).and_return(value)
+        end
+      else
+        better_stub_method(selector_or_hash, options, &block)
+      end
+    end
+
+
+    private
+
+    def better_stub_method(selector, options, &block)
       if subject_is_any_instance?
         any_instance_better_expect(selector, options, &block)
       else
@@ -9,9 +22,6 @@ module BetterReceive
         stub_subject_method(selector, options, &block)
       end
     end
-
-
-    private
 
     def stub_subject_method(selector, options, &block)
       location = options[:expected_from] || caller(1)[2]
