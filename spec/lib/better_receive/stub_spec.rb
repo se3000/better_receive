@@ -29,9 +29,10 @@ describe BetterReceive::Stub do
         end
       end
 
-      context "when mocking" do
-        context "given a single selector"
+      context "when stubbing" do
         let(:mock_proxy) { double(RSpec::Mocks::Proxy).as_null_object }
+        let(:block_param) { Proc.new {} }
+        let(:options) { {passed: true} }
 
         it "creates a mock proxy and adds an expectation to it" do
           foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
@@ -47,20 +48,21 @@ describe BetterReceive::Stub do
           br_stub.assert_with(:bar).with('wibble')
         end
 
-        context "and passing arguments" do
-          let(:block_param) { Proc.new {} }
-          let(:options) { {passed: true} }
-
-          it "passes all arguments through to the mock_proxy" do
-            foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-            mock_proxy.should_receive(:add_stub) do |*args, &block|
-            args[1].should == :bar
-            args[2].should == options
-            block.should == block_param
-            end
-
-            br_stub.assert_with(:bar, passed: true, &block_param)
+        it "passes all arguments through to the mock_proxy" do
+          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
+          mock_proxy.should_receive(:add_stub) do |*args, &block|
+          args[1].should == :bar
+          args[2].should == options
+          block.should == block_param
           end
+
+          br_stub.assert_with(:bar, passed: true, &block_param)
+        end
+
+        it "returns the value passed in the block" do
+          br_stub.assert_with(:bar) { :baz }
+
+          foo.bar.should == :baz
         end
       end
     end

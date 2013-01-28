@@ -33,6 +33,12 @@ describe BetterReceive do
 
       foo.bar('wibble')
     end
+
+    it "returns the value of the block passed in" do
+      foo.better_receive(:bar) { :baz }
+
+      foo.bar.should == :baz
+    end
   end
 
   describe "#better_stub" do
@@ -62,6 +68,12 @@ describe BetterReceive do
       foo.better_stub(:bar).with('wibble')
 
       foo.bar('wibble')
+    end
+
+    it "returns the value of the block passed in" do
+      foo.better_stub(:bar) { :baz }
+
+      foo.bar.should == :baz
     end
   end
 end
