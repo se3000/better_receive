@@ -11,7 +11,7 @@ module BetterReceive
     attr_reader :subject
 
     def subject_is_any_instance?
-      subject.is_a?(RSpec::Mocks::AnyInstance::Recorder)
+      defined?(RSpec::Mocks::AnyInstance) && subject.is_a?(RSpec::Mocks::AnyInstance::Recorder)
     end
 
     def respond_to(selector)
