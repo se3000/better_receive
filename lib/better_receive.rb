@@ -8,6 +8,10 @@ module BetterReceive
     Mock.new(self).assert_with(*args, &block)
   end
 
+  def better_not_receive(*args, &block)
+    Mock.new(self).assert_negative_with(*args, &block)
+  end
+
   def better_stub(*args, &block)
     Stub.new(self).assert_with(*args, &block)
   end

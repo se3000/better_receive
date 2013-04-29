@@ -10,6 +10,15 @@ module BetterReceive
       end
     end
 
+    def assert_negative_with(selector, options={}, &block)
+      if subject_is_any_instance?
+        any_instance_better_not_expect(selector, options, &block)
+      else
+        subject.should respond_to selector
+        negative_mock_subject_method(selector, options, &block)
+      end
+    end
+
 
     private
 
@@ -18,11 +27,24 @@ module BetterReceive
       subject_mock_proxy.add_message_expectation(location, selector, options, &block)
     end
 
+    def negative_mock_subject_method(selector, options, &block)
+      location = options[:expected_from] || caller(1)[2]
+      subject_mock_proxy.add_negative_message_expectation(location, selector, &block)
+    end
+
     def expectation_chain(*args)
       if defined?(RSpec::Mocks::AnyInstance::PositiveExpectationChain)
         RSpec::Mocks::AnyInstance::PositiveExpectationChain.new(*args)
       else
         RSpec::Mocks::AnyInstance::ExpectationChain.new(*args)
+      end
+    end
+
+    def negative_expectation_chain(*args)
+      if defined?(RSpec::Mocks::AnyInstance::NegativeExpectationChain)
+        RSpec::Mocks::AnyInstance::NegativeExpectationChain.new(*args)
+      else
+        RSpec::Mocks::AnyInstance::NegativeExpectationChain.new(*args)
       end
     end
 
