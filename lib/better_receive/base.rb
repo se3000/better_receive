@@ -27,6 +27,11 @@ module BetterReceive
       any_instance_add_expectation selector, &block
     end
 
+    def any_instance_better_not_expect(selector, options, &block)
+      any_instance_should_respond_to selector
+      any_instance_add_negative_expectation selector, &block
+    end
+
     def any_instance_should_respond_to(selector)
       klass = subject.instance_variable_get(:@klass)
       unless klass.method_defined?(selector)
@@ -41,6 +46,15 @@ module BetterReceive
       subject.send(:observe!, selector)
 
       subject.message_chains.add(selector, expectation_chain(selector, &block))
+    end
+
+    def any_instance_add_negative_expectation(selector, &block)
+      RSpec::Mocks::space.add(subject)
+
+      subject.instance_variable_set(:@expectation_set, true)
+      subject.send(:observe!, selector)
+
+      subject.message_chains.add(selector, negative_expectation_chain(selector, &block))
     end
 
   end
