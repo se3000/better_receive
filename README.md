@@ -20,6 +20,8 @@ foo.better_receive(:bar)
 foo.better_stub(bar: 1, baz: 2)
 # or
 Foo.any_instance.better_receive(:bar).with(:wibble)
+# or
+foo.better_not_receive(:bar_baz)
 
 ```
 

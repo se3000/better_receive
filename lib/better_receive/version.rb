@@ -1,3 +1,3 @@
 module BetterReceive
-  BETTER_VERSION = "0.4.1"
+  BETTER_VERSION = "0.5.0"
 end
