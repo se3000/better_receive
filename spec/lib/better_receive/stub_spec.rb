@@ -51,12 +51,21 @@ describe BetterReceive::Stub do
         it "passes all arguments through to the mock_proxy" do
           foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
           mock_proxy.should_receive(:add_stub) do |*args, &block|
-          args[1].should == :bar
-          args[2].should == options
-          block.should == block_param
+            args[1].should == :bar
+            args[2].should == options
+            block.should == block_param
           end
 
           br_stub.assert_with(:bar, passed: true, &block_param)
+        end
+
+        it "converts the selector to a string" do
+          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
+          mock_proxy.should_receive(:add_stub) do |*args, &block|
+            args[1].should == :bar
+          end
+
+          br_stub.assert_with("bar", passed: true, &block_param)
         end
 
         it "returns the value passed in the block" do

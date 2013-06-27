@@ -60,6 +60,15 @@ describe BetterReceive::Mock do
 
           br_mock.assert_with(:bar, passed: true, &block_param)
         end
+
+        it "converts the selector to a symbol if necessary" do
+          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
+          mock_proxy.should_receive(:add_message_expectation) do |*args, &block|
+            args[1].should == :bar
+          end
+
+          br_mock.assert_with('bar', passed: true, &block_param)
+        end
       end
 
       context "on .any_instance" do
@@ -147,11 +156,20 @@ describe BetterReceive::Mock do
         it "passes all arguments through to the mock_proxy" do
           foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
           mock_proxy.should_receive(:add_negative_message_expectation) do |*args, &block|
-          args[1].should == :bar
-          block.should == block_param
+            args[1].should == :bar
+            block.should == block_param
           end
 
           br_mock.assert_negative_with(:bar, &block_param)
+        end
+
+        it "converts the selector to a symbol" do
+          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
+          mock_proxy.should_receive(:add_negative_message_expectation) do |*args, &block|
+            args[1].should == :bar
+          end
+
+          br_mock.assert_negative_with("bar", &block_param)
         end
       end
 
