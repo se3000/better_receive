@@ -26,84 +26,80 @@ describe BetterReceive::Mock do
       }
     end
 
-    context "when mocking" do
-      let(:mock_proxy) { double(RSpec::Mocks::Proxy) }
+    it "returns an rspec message expectation" do
+      foo.better_receive(:bar).should be_a RSpec::Mocks::MessageExpectation
 
-      it "creates a mock proxy and adds an expectation to it" do
-        foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-        mock_proxy.should_receive(:add_message_expectation)
+      foo.bar
+    end
 
-        br_mock.assert_with :bar
+    it "responds to additional matchers(:with, :once...)" do
+      br_mock.assert_with(:bar).with('wibble')
+
+      foo.bar('wibble')
+    end
+
+    context "passing arguments" do
+      let(:selector) { :bar }
+      let(:options) { {passed: true} }
+      let(:block_param) { Proc.new {} }
+
+      before do
+        br_mock.assert_with(:bar, options, &block_param)
+
+        @expectation = RSpec::Mocks.proxy_for(foo).send(:method_doubles)[0][:expectations][0]
       end
 
-      it "returns an rspec message expectation(responds to additional matchers ('with', 'once'...))" do
-        foo.better_receive(:bar).should be_a RSpec::Mocks::MessageExpectation
-
+      after do
         foo.bar
-
-        br_mock.assert_with(:bar).with('wibble')
-
-        foo.bar('wibble')
       end
 
-      context "and passing arguments" do
-        let(:block_param) { Proc.new {} }
-        let(:options) { {passed: true} }
-
-        it "passes all arguments through to the mock_proxy" do
-          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-          mock_proxy.should_receive(:add_message_expectation) do |*args, &block|
-            args[1].should == :bar
-            args[2].should == options
-            block.should == block_param
-          end
-
-          br_mock.assert_with(:bar, passed: true, &block_param)
-        end
-
-        it "converts the selector to a symbol if necessary" do
-          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-          mock_proxy.should_receive(:add_message_expectation) do |*args, &block|
-            args[1].should == :bar
-          end
-
-          br_mock.assert_with('bar', passed: true, &block_param)
-        end
+      it "passes all arguments through to the mock_proxy" do
+        @expectation.message.should == :bar
+        @expectation.implementation.inner_action.should == block_param
+        @expectation.send(:error_generator).opts.should == options
       end
 
-      context "on .any_instance" do
-        let(:br_mock) { BetterReceive::Mock.new(Foo.any_instance) }
+      context "when the selector is a string" do
+        let(:selector) { "bar" }
 
-        context "when the method is defined" do
-          context "and the method is called" do
-            it 'does not raise an error' do
-              expect {
-                br_mock.assert_with(:bar)
-                foo.bar
-              }.to_not raise_error
-            end
-          end
-
-          context 'and the method is not called' do
-            it 'does raise an error' do
-              expect {
-                br_mock.assert_with(:bar)
-                RSpec::Mocks::space.verify_all
-              }.to raise_error(RSpec::Mocks::MockExpectationError) { |error|
-                error.message.should == "Exactly one instance should have received the following message(s) but didn't: bar"
-              }
-            end
-          end
+        it "converts the selector to a symbol" do
+          @expectation.message.should == selector.to_sym
         end
+      end
+    end
 
-        context 'when the method is not defined' do
-          it 'raises an error' do
+    context "on .any_instance" do
+      let(:br_mock) { BetterReceive::Mock.new(Foo.any_instance) }
+
+      context "when the method is defined" do
+        context "and the method is called" do
+          it 'does not raise an error' do
             expect {
-              br_mock.assert_with(:baz)
-            }.to raise_error { |error|
-              error.message.should == "Expected instances of Foo to respond to :baz"
+              br_mock.assert_with(:bar)
+              foo.bar
+            }.to_not raise_error
+          end
+        end
+
+        context 'and the method is not called' do
+          it 'does raise an error' do
+            expect {
+              br_mock.assert_with(:bar)
+              RSpec::Mocks::space.verify_all
+            }.to raise_error(RSpec::Mocks::MockExpectationError) { |error|
+              error.message.should == "Exactly one instance should have received the following message(s) but didn't: bar"
             }
           end
+        end
+      end
+
+      context 'when the method is not defined' do
+        it 'raises an error' do
+          expect {
+            br_mock.assert_with(:baz)
+          }.to raise_error { |error|
+            error.message.should == "Expected instances of Foo to respond to :baz"
+          }
         end
       end
     end
@@ -121,91 +117,77 @@ describe BetterReceive::Mock do
       }
     end
 
-    context "when mocking" do
-      let(:mock_proxy) { double(RSpec::Mocks::Proxy) }
+    it "returns an rspec message expectation" do
+      br_mock.assert_negative_with(:bar).should be_a RSpec::Mocks::MessageExpectation
 
-      it "creates a mock proxy and adds an expectation to it" do
-        foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-        mock_proxy.should_receive(:add_negative_message_expectation)
+      expect {
+        foo.bar
+      }.to raise_error(RSpec::Mocks::MockExpectationError) { |error|
+        error.message.should include "received: 1 time"
+      }
+    end
 
-        br_mock.assert_negative_with :bar
+    it "responds to additional matchers(:with, :once...)" do
+      br_mock.assert_negative_with(:bar).with('wibble')
+      expect {
+        foo.bar('wibble')
+      }.to raise_error(RSpec::Mocks::MockExpectationError) { |error|
+        error.message.should include "received: 1 time"
+      }
+    end
+
+    context "passing arguments" do
+      let(:selector) { :bar }
+      let(:options) { {passed: true} }
+      let(:block_param) { Proc.new {} }
+
+      before do
+        br_mock.assert_negative_with(:bar, options, &block_param)
+
+        @expectation = RSpec::Mocks.proxy_for(foo).send(:method_doubles)[0][:expectations][0]
       end
 
-      it "returns an rspec message expectation(responds to additional matchers ('with', 'once'...))" do
-        foo.better_not_receive(:bar).should be_a RSpec::Mocks::NegativeMessageExpectation
+      it "passes all arguments through to the mock_proxy" do
+        @expectation.message.should == :bar
+        @expectation.implementation.inner_action.should == block_param
+        @expectation.send(:error_generator).opts.should == options
+      end
 
+      context "when the selector is a string" do
+        let(:selector) { "bar" }
+
+        it "converts the selector to a symbol" do
+          @expectation.message.should == selector.to_sym
+        end
+      end
+    end
+
+    context "on .any_instance" do
+      let(:br_mock) { BetterReceive::Mock.new(Foo.any_instance) }
+
+      it 'raises when called' do
         expect {
+          br_mock.assert_negative_with(:bar)
           foo.bar
         }.to raise_error(RSpec::Mocks::MockExpectationError) { |error|
           error.message.should include "received: 1 time"
         }
+      end
 
-        br_mock.assert_negative_with(:bar).with('wibble')
+      it 'does not raise an error if not called' do
         expect {
-          foo.bar('wibble')
-        }.to raise_error(RSpec::Mocks::MockExpectationError) { |error|
-          error.message.should include "received: 1 time"
-        }
-
+          br_mock.assert_negative_with(:bar)
+          RSpec::Mocks::space.verify_all
+        }.to_not raise_error
       end
 
-      context "and passing arguments" do
-        let(:block_param) { Proc.new {} }
-        let(:options) { {passed: true} }
-
-        it "passes all arguments through to the mock_proxy" do
-          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-          mock_proxy.should_receive(:add_negative_message_expectation) do |*args, &block|
-            args[1].should == :bar
-            block.should == block_param
-          end
-
-          br_mock.assert_negative_with(:bar, &block_param)
-        end
-
-        it "converts the selector to a symbol" do
-          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-          mock_proxy.should_receive(:add_negative_message_expectation) do |*args, &block|
-            args[1].should == :bar
-          end
-
-          br_mock.assert_negative_with("bar", &block_param)
-        end
-      end
-
-      context "on .any_instance" do
-        let(:br_mock) { BetterReceive::Mock.new(Foo.any_instance) }
-
-        context "when the method is defined" do
-          context "and the method is called" do
-            it 'raises when called' do
-              expect {
-                br_mock.assert_negative_with(:bar)
-                foo.bar
-              }.to raise_error(RSpec::Mocks::MockExpectationError) { |error|
-                error.message.should include "received: 1 time"
-              }
-            end
-          end
-
-          context 'and the method is not called' do
-            it 'does not raise an error' do
-              expect {
-                br_mock.assert_negative_with(:bar)
-                RSpec::Mocks::space.verify_all
-              }.to_not raise_error
-            end
-          end
-        end
-
-        context 'when the method is not defined' do
-          it 'raises an error' do
-            expect {
-              br_mock.assert_negative_with(:baz)
-            }.to raise_error { |error|
-              error.message.should == "Expected instances of Foo to respond to :baz"
-            }
-          end
+      context 'when the method is not defined' do
+        it 'raises an error' do
+          expect {
+            br_mock.assert_negative_with(:baz)
+          }.to raise_error { |error|
+            error.message.should == "Expected instances of Foo to respond to :baz"
+          }
         end
       end
     end

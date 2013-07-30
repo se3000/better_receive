@@ -24,6 +24,10 @@ module BetterReceive
 
     private
 
+    def subject_mock_proxy
+      @mock_proxy ||= RSpec::Mocks.proxy_for(subject)
+    end
+
     def mock_subject_method(selector, options, &block)
       location = options[:expected_from] || caller(1)[2]
       subject_mock_proxy.add_message_expectation(location, selector, options, &block)
@@ -31,7 +35,7 @@ module BetterReceive
 
     def negative_mock_subject_method(selector, options, &block)
       location = options[:expected_from] || caller(1)[2]
-      subject_mock_proxy.add_negative_message_expectation(location, selector, &block)
+      subject_mock_proxy.add_message_expectation(location, selector, options, &block).never
     end
 
     def expectation_chain(*args)
@@ -41,14 +45,5 @@ module BetterReceive
         RSpec::Mocks::AnyInstance::ExpectationChain.new(*args)
       end
     end
-
-    def negative_expectation_chain(*args)
-      if defined?(RSpec::Mocks::AnyInstance::NegativeExpectationChain)
-        RSpec::Mocks::AnyInstance::NegativeExpectationChain.new(*args)
-      else
-        RSpec::Mocks::AnyInstance::NegativeExpectationChain.new(*args)
-      end
-    end
-
   end
 end

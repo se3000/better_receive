@@ -25,8 +25,7 @@ module BetterReceive
     end
 
     def stub_subject_method(selector, options, &block)
-      location = options[:expected_from] || caller(1)[2]
-      subject_mock_proxy.add_stub(location, selector, options, &block)
+      subject.stub(selector, options, &block)
     end
 
     def expectation_chain(*args)

@@ -11,67 +11,57 @@ describe BetterReceive::Stub do
     let(:br_stub) { BetterReceive::Stub.new(foo) }
 
     context "when passed a single selector" do
-      context "when checking responds to" do
-        it "determines whether an object responds to a method" do
-          foo.should_receive(:respond_to?).with(:bar).and_return(true)
+      it "determines whether an object responds to a method" do
+        foo.should_receive(:respond_to?).with(:bar).and_return(true)
 
-          br_stub.assert_with :bar
+        br_stub.assert_with :bar
 
-          foo.bar
-        end
-
-        it "raises an error if the method is not defined" do
-          expect {
-            br_stub.assert_with :bar_baz
-          }.to raise_error(RSpec::Expectations::ExpectationNotMetError) { |error|
-            error.message.should =~ /to respond to :bar_baz/
-          }
-        end
+        foo.bar
       end
 
-      context "when stubbing" do
-        let(:mock_proxy) { double(RSpec::Mocks::Proxy).as_null_object }
-        let(:block_param) { Proc.new {} }
+      it "raises an error if the method is not defined" do
+        expect {
+          br_stub.assert_with :bar_baz
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError) { |error|
+          error.message.should =~ /to respond to :bar_baz/
+        }
+      end
+
+      it "returns an rspec message expectation(responds to additional matchers ('with', 'once'...))" do
+        br_stub.assert_with(:bar).should be_a RSpec::Mocks::MessageExpectation
+
+        br_stub.assert_with(:bar).with('wibble')
+      end
+
+      it "returns the value passed in the block" do
+        br_stub.assert_with(:bar) { :baz }
+
+        foo.bar.should == :baz
+      end
+
+      context "when passing arguments" do
+        let(:selector) { :bar }
         let(:options) { {passed: true} }
+        let(:block_param) { Proc.new {} }
+
+        before do
+          br_stub.assert_with(:bar, options, &block_param)
+
+          @stub = RSpec::Mocks.proxy_for(foo).send(:method_doubles)[0][:stubs][0]
+        end
 
         it "creates a mock proxy and adds an expectation to it" do
-          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-          mock_proxy.should_receive(:add_stub)
-
-          br_stub.assert_with :bar
+          @stub.message.should == :bar
+          @stub.implementation.inner_action.should == block_param
+          @stub.send(:error_generator).opts.should == options
         end
 
-        it "returns an rspec message expectation(responds to additional matchers ('with', 'once'...))" do
-          br_stub.assert_with(:bar).should be_a RSpec::Mocks::MessageExpectation
+        context "when the selector is a string" do
+          let(:selector) { "bar" }
 
-
-          br_stub.assert_with(:bar).with('wibble')
-        end
-
-        it "passes all arguments through to the mock_proxy" do
-          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-          mock_proxy.should_receive(:add_stub) do |*args, &block|
-            args[1].should == :bar
-            args[2].should == options
-            block.should == block_param
+          it "converts the selector to a symbol" do
+            @stub.message.should == selector.to_sym
           end
-
-          br_stub.assert_with(:bar, passed: true, &block_param)
-        end
-
-        it "converts the selector to a string" do
-          foo.should_receive(:send).with(:__mock_proxy).and_return(mock_proxy)
-          mock_proxy.should_receive(:add_stub) do |*args, &block|
-            args[1].should == :bar
-          end
-
-          br_stub.assert_with("bar", passed: true, &block_param)
-        end
-
-        it "returns the value passed in the block" do
-          br_stub.assert_with(:bar) { :baz }
-
-          foo.bar.should == :baz
         end
       end
     end

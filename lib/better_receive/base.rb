@@ -18,10 +18,6 @@ module BetterReceive
       RSpec::Matchers::BuiltIn::RespondTo.new(selector)
     end
 
-    def subject_mock_proxy
-      @mock_proxy ||= subject.send(:__mock_proxy)
-    end
-
     def any_instance_better_expect(selector, options, &block)
       any_instance_should_respond_to selector
       any_instance_add_expectation selector, &block
@@ -40,8 +36,6 @@ module BetterReceive
     end
 
     def any_instance_add_expectation(selector, &block)
-      RSpec::Mocks::space.add(subject)
-
       subject.instance_variable_set(:@expectation_set, true)
       subject.send(:observe!, selector)
 
@@ -49,12 +43,11 @@ module BetterReceive
     end
 
     def any_instance_add_negative_expectation(selector, &block)
-      RSpec::Mocks::space.add(subject)
-
       subject.instance_variable_set(:@expectation_set, true)
+
       subject.send(:observe!, selector)
 
-      subject.message_chains.add(selector, negative_expectation_chain(selector, &block))
+      subject.message_chains.add(selector, expectation_chain(selector, &block)).never
     end
 
   end
