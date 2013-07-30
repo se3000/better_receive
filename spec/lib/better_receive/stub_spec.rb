@@ -112,6 +112,10 @@ describe BetterReceive::Stub do
 
           foo.bar.should == :whatever
         end
+
+        it "does not blow up if the method is not called" do
+          br_stub.assert_with(:bar)
+        end
       end
 
       context 'when the method is not defined' do

@@ -36,15 +36,12 @@ module BetterReceive
     end
 
     def any_instance_add_expectation(selector, &block)
-      subject.instance_variable_set(:@expectation_set, true)
       subject.send(:observe!, selector)
 
       subject.message_chains.add(selector, expectation_chain(selector, &block))
     end
 
     def any_instance_add_negative_expectation(selector, &block)
-      subject.instance_variable_set(:@expectation_set, true)
-
       subject.send(:observe!, selector)
 
       subject.message_chains.add(selector, expectation_chain(selector, &block)).never

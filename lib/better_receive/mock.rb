@@ -4,6 +4,7 @@ module BetterReceive
     def assert_with(selector, options={}, &block)
       selector = selector.to_sym
       if subject_is_any_instance?
+        subject.instance_variable_set(:@expectation_set, true)
         any_instance_better_expect(selector, options, &block)
       else
         subject.should respond_to selector
@@ -14,6 +15,7 @@ module BetterReceive
     def assert_negative_with(selector, options={}, &block)
       selector = selector.to_sym
       if subject_is_any_instance?
+        subject.instance_variable_set(:@expectation_set, true)
         any_instance_better_not_expect(selector, options, &block)
       else
         subject.should respond_to selector
@@ -39,11 +41,7 @@ module BetterReceive
     end
 
     def expectation_chain(*args)
-      if defined?(RSpec::Mocks::AnyInstance::PositiveExpectationChain)
-        RSpec::Mocks::AnyInstance::PositiveExpectationChain.new(*args)
-      else
-        RSpec::Mocks::AnyInstance::ExpectationChain.new(*args)
-      end
+      RSpec::Mocks::AnyInstance::PositiveExpectationChain.new(*args)
     end
   end
 end

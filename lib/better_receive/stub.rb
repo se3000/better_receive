@@ -20,17 +20,12 @@ module BetterReceive
         any_instance_better_expect(selector, options, &block)
       else
         subject.should respond_to selector
-        stub_subject_method(selector, options, &block)
+        subject.stub(selector, options, &block)
       end
-    end
-
-    def stub_subject_method(selector, options, &block)
-      subject.stub(selector, options, &block)
     end
 
     def expectation_chain(*args)
       RSpec::Mocks::AnyInstance::StubChain.new(*args)
     end
-
   end
 end
