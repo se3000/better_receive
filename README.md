@@ -9,7 +9,6 @@ Test drive new functionality and prevent bugs by asserting objects respond to me
 
 ## Usage
 
-
 ```ruby
 
 class Foo; end
@@ -29,6 +28,8 @@ Any of these situation will raise an error because instances of Foo do not respo
 
 After the initial extra assertion, they continue to act like regular RSpec mocks/stubs.
 
+
+If you are using a version of RSpec < 2.14, lock to BetterReceive version 0.5 or earlier.
 
 ## Contributing
 
