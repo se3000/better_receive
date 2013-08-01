@@ -1,14 +1,17 @@
 module BetterReceive
   class Base
 
-    def initialize(subject)
+    def initialize(subject, message, options={}, &block)
       @subject = subject
+      @selector = message.is_a?(Hash) ? message : message.to_sym
+      @options = options
+      @block = block
     end
 
 
     private
 
-    attr_reader :subject
+    attr_reader :subject, :selector, :options, :block
 
     def subject_is_any_instance?
       defined?(RSpec::Mocks::AnyInstance) && subject.is_a?(RSpec::Mocks::AnyInstance::Recorder)

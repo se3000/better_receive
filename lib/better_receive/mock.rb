@@ -1,8 +1,7 @@
 module BetterReceive
   class Mock < Base
 
-    def assert_with(selector, options={}, &block)
-      selector = selector.to_sym
+    def assert
       if subject_is_any_instance?
         subject.instance_variable_set(:@expectation_set, true)
         any_instance_better_expect(selector, options, &block)
@@ -12,8 +11,7 @@ module BetterReceive
       end
     end
 
-    def assert_negative_with(selector, options={}, &block)
-      selector = selector.to_sym
+    def assert_negative
       if subject_is_any_instance?
         subject.instance_variable_set(:@expectation_set, true)
         any_instance_better_not_expect(selector, options, &block)

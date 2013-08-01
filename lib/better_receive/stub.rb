@@ -1,13 +1,13 @@
 module BetterReceive
   class Stub < Base
 
-    def assert_with(selector_or_hash, options={}, &block)
-      if selector_or_hash.is_a?(Hash)
-        selector_or_hash.each do |selector, value|
-          better_stub_method(selector, options, &block).and_return(value)
+    def assert
+      if selector.is_a?(Hash)
+        selector.each do |single_selector, value|
+          better_stub_method(single_selector.to_sym, options, &block).and_return(value)
         end
       else
-        better_stub_method(selector_or_hash, options, &block)
+        better_stub_method(selector, options, &block)
       end
     end
 

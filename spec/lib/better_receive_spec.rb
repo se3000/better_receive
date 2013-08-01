@@ -10,15 +10,15 @@ describe BetterReceive do
     let(:br_instance) { double(BetterReceive::Mock).as_null_object }
 
     it "passes the object being mocked into a new BetterReceive::Mock instance" do
-      BetterReceive::Mock.should_receive(:new).with(foo).and_return(br_instance)
+      BetterReceive::Mock.should_receive(:new).with(foo, :bar, {}).and_return(br_instance)
 
       foo.better_receive(:bar)
     end
 
     it "checks that the object responds to the method and that the method is called" do
-      BetterReceive::Mock.stub(:new).with(foo).and_return(br_instance)
+      BetterReceive::Mock.stub(:new).with(foo, :bar, {}).and_return(br_instance)
 
-      br_instance.should_receive(:assert_with).with(:bar)
+      br_instance.should_receive(:assert)
 
       foo.better_receive(:bar)
     end
@@ -46,15 +46,15 @@ describe BetterReceive do
     let(:br_instance) { double(BetterReceive::Stub).as_null_object }
 
     it "passes the object being stubbed into a new BetterReceive::Stub instance" do
-      BetterReceive::Stub.should_receive(:new).with(foo).and_return(br_instance)
+      BetterReceive::Stub.should_receive(:new).with(foo, :bar, {}).and_return(br_instance)
 
       foo.better_stub(:bar)
     end
 
     it "checks that the object responds to the method and that the method is called" do
-      BetterReceive::Stub.stub(:new).with(foo).and_return(br_instance)
+      BetterReceive::Stub.stub(:new).with(foo, :bar, {}).and_return(br_instance)
 
-      br_instance.should_receive(:assert_with).with(:bar)
+      br_instance.should_receive(:assert)
 
       foo.better_stub(:bar)
     end
