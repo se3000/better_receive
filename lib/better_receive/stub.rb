@@ -9,6 +9,7 @@ module BetterReceive
       else
         better_stub_method(selector, options, &block)
       end
+      self
     end
 
 
@@ -20,7 +21,7 @@ module BetterReceive
         any_instance_better_expect(selector, options, &block)
       else
         subject.should respond_to selector
-        subject.stub(selector, options, &block)
+        @expectation = subject.stub(selector, options, &block)
       end
     end
 

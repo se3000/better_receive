@@ -32,7 +32,7 @@ describe BetterReceive::Mock do
     end
 
     it "returns an rspec message expectation" do
-      foo.better_receive(:bar).should be_a RSpec::Mocks::MessageExpectation
+      foo.better_receive(:bar).should be_a BetterReceive::Mock
 
       foo.bar
     end
@@ -98,6 +98,12 @@ describe BetterReceive::Mock do
             }
           end
         end
+
+        it 'responds to additional matchers' do
+          br_mock.assert.with(1).and_return(2)
+
+          foo.bar(1).should == 2
+        end
       end
 
       context 'when the method is not defined' do
@@ -131,7 +137,7 @@ describe BetterReceive::Mock do
     end
 
     it "returns an rspec message expectation" do
-      br_mock.assert_negative.should be_a RSpec::Mocks::MessageExpectation
+      br_mock.assert_negative.should be_a BetterReceive::Mock
 
       expect {
         foo.bar

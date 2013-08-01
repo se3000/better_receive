@@ -24,7 +24,7 @@ describe BetterReceive do
     end
 
     it "returns an RSpec expectation object" do
-      foo.better_receive(:bar).should be_a RSpec::Mocks::MessageExpectation
+      foo.better_receive(:bar).should be_a BetterReceive::Mock
 
       foo.bar
 
@@ -60,7 +60,7 @@ describe BetterReceive do
     end
 
     it "returns an RSpec expectation object" do
-      foo.better_stub(:bar).should be_a RSpec::Mocks::MessageExpectation
+      foo.better_stub(:bar).should be_a BetterReceive::Stub
 
       foo.bar
 

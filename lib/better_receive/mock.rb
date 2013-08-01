@@ -9,6 +9,7 @@ module BetterReceive
         subject.should respond_to selector
         mock_subject_method(selector, options, &block)
       end
+      self
     end
 
     def assert_negative
@@ -19,6 +20,7 @@ module BetterReceive
         subject.should respond_to selector
         negative_mock_subject_method(selector, options, &block)
       end
+      self
     end
 
 
@@ -30,12 +32,12 @@ module BetterReceive
 
     def mock_subject_method(selector, options, &block)
       location = options[:expected_from] || caller(1)[2]
-      subject_mock_proxy.add_message_expectation(location, selector, options, &block)
+      @expectation = subject_mock_proxy.add_message_expectation(location, selector, options, &block)
     end
 
     def negative_mock_subject_method(selector, options, &block)
       location = options[:expected_from] || caller(1)[2]
-      subject_mock_proxy.add_message_expectation(location, selector, options, &block).never
+      @expectation = subject_mock_proxy.add_message_expectation(location, selector, options, &block).never
     end
 
     def expectation_chain(*args)

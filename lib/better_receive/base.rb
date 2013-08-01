@@ -8,10 +8,14 @@ module BetterReceive
       @block = block
     end
 
+    def method_missing(*args)
+      expectation.send(*args)
+    end
+
 
     private
 
-    attr_reader :subject, :selector, :options, :block
+    attr_reader :subject, :selector, :options, :block, :expectation
 
     def subject_is_any_instance?
       defined?(RSpec::Mocks::AnyInstance) && subject.is_a?(RSpec::Mocks::AnyInstance::Recorder)
@@ -41,13 +45,13 @@ module BetterReceive
     def any_instance_add_expectation(selector, &block)
       subject.send(:observe!, selector)
 
-      subject.message_chains.add(selector, expectation_chain(selector, &block))
+      @expectation = subject.message_chains.add(selector, expectation_chain(selector, &block))
     end
 
     def any_instance_add_negative_expectation(selector, &block)
       subject.send(:observe!, selector)
 
-      subject.message_chains.add(selector, expectation_chain(selector, &block)).never
+      @expectation = subject.message_chains.add(selector, expectation_chain(selector, &block)).never
     end
 
   end

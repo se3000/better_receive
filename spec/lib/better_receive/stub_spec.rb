@@ -32,7 +32,7 @@ describe BetterReceive::Stub do
       end
 
       it "returns an rspec message expectation(responds to additional matchers ('with', 'once'...))" do
-        br_stub.assert.should be_a RSpec::Mocks::MessageExpectation
+        br_stub.assert.should be_a BetterReceive::Stub
 
         br_stub.assert.with('wibble')
       end
