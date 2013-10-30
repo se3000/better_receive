@@ -41,7 +41,7 @@ module BetterReceive
     end
 
     def expectation_chain(*args)
-      RSpec::Mocks::AnyInstance::PositiveExpectationChain.new(*args)
+      RSpec::Mocks::AnyInstance::PositiveExpectationChain.new(subject, *args)
     end
   end
 end

@@ -4,7 +4,8 @@ module BetterReceive
     def assert
       if selector.is_a?(Hash)
         selector.each do |single_selector, value|
-          better_stub_method(single_selector.to_sym, options, &block).and_return(value)
+          better_stub_method(single_selector.to_sym, options, &block)
+            .and_return(value)
         end
       else
         better_stub_method(selector, options, &block)
@@ -26,7 +27,7 @@ module BetterReceive
     end
 
     def expectation_chain(*args)
-      RSpec::Mocks::AnyInstance::StubChain.new(*args)
+      RSpec::Mocks::AnyInstance::StubChain.new(subject, *args)
     end
   end
 end

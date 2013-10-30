@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.version       = BetterReceive::BETTER_VERSION
 
   gem.add_dependency("rspec", "~> 2.14")
+  gem.add_dependency("rspec-core", "~> 2.14.6")
   gem.add_development_dependency("rake", ">= 0")
   gem.add_development_dependency("pry", ">= 0")
 end

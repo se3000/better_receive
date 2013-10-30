@@ -27,12 +27,12 @@ module BetterReceive
 
     def any_instance_better_expect(selector, options, &block)
       any_instance_should_respond_to selector
-      any_instance_add_expectation selector, &block
+      any_instance_add_expectation(selector, &block)
     end
 
     def any_instance_better_not_expect(selector, options, &block)
       any_instance_should_respond_to selector
-      any_instance_add_negative_expectation selector, &block
+      any_instance_add_negative_expectation(selector, &block)
     end
 
     def any_instance_should_respond_to(selector)
@@ -45,13 +45,15 @@ module BetterReceive
     def any_instance_add_expectation(selector, &block)
       subject.send(:observe!, selector)
 
-      @expectation = subject.message_chains.add(selector, expectation_chain(selector, &block))
+      chain = expectation_chain(selector, &block)
+      @expectation = subject.message_chains.add(selector, chain)
     end
 
     def any_instance_add_negative_expectation(selector, &block)
       subject.send(:observe!, selector)
 
-      @expectation = subject.message_chains.add(selector, expectation_chain(selector, &block)).never
+      chain = expectation_chain(selector, &block)
+      @expectation = subject.message_chains.add(selector, chain).never
     end
 
   end
