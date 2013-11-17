@@ -14,6 +14,7 @@ Gem::Specification.new do |gem|
   gem.name          = "better_receive"
   gem.require_paths = ["lib"]
   gem.version       = BetterReceive::BETTER_VERSION
+  spec.license      = "MIT"
 
   gem.add_dependency("rspec", "~> 2.14")
   gem.add_dependency("rspec-core", "~> 2.14.6")
